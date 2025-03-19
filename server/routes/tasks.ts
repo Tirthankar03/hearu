@@ -119,12 +119,13 @@ const { userId } = c.req.valid("param");
   return c.json({ success: true, data: groupedTasks });
 })
 //to complete a task
-.patch("/:taskId/complete",
-    zValidator("param", z.object({ userId: z.string().min(1) })),
+.put("/:taskId/complete",
+    zValidator("param", z.object({ taskId: z.string().min(1) })),
+    zValidator("form", z.object({ userId: z.string().min(1) })),
     async (c) => {
 //   const user = c.get("user");
-  const taskId = c.req.param("taskId");
-  const { userId } = c.req.valid("param");
+  const {taskId} = c.req.valid("param");
+  const { userId } = c.req.valid("form");
 
   const task = await db
     .select()
@@ -134,7 +135,7 @@ const { userId } = c.req.valid("param");
         eq(dailyTasksTable.id, parseInt(taskId)),
         eq(dailyTasksTable.userId, userId)
       )
-    )
+    ).limit(1)
 
   if (!task) throw new HTTPException(404, { message: "Task not found" });
 
@@ -143,7 +144,7 @@ const { userId } = c.req.valid("param");
     .set({ isCompleted: true })
     .where(eq(dailyTasksTable.id, parseInt(taskId)));
 
-  return c.json({ success: true, message: "Task marked as completed" });
+  return c.json({ success: true, message: "Task marked as completed", task });
 });
 
 export { tasksRouter };

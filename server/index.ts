@@ -10,6 +10,9 @@ import { authRouter } from "./routes/auth";
 import { commentsRouter } from "./routes/comments";
 import { moodRouter } from "./routes/mood";
 import { postRouter } from "./routes/posts";
+import { audioRouter } from "./routes/audio";
+import { articleRouter } from "./routes/aritcles";
+import { tasksRouter } from "./routes/tasks";
 
 // import { serveStatic } from "hono/bun";
 
@@ -46,8 +49,11 @@ const routes = app
   .route("/auth", authRouter)
   .route("/posts", postRouter)
   .route("/comments", commentsRouter)
-  .route("/mood", moodRouter);
-
+  .route("/mood", moodRouter)
+  .route("/audios", audioRouter)
+  .route("/articles", articleRouter)
+  .route("/tasks", tasksRouter);
+  
 app.onError((err, c) => {
   if (err instanceof HTTPException) {
     const errResponse =

@@ -15,6 +15,20 @@
       "when": 1741222301492,
       "tag": "0001_lowly_nitro",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1742394384500,
+      "tag": "0002_shallow_the_spike",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1742395608679,
+      "tag": "0003_tricky_chat",
+      "breakpoints": true
     }
   ]
 }
