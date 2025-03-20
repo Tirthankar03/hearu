@@ -13,6 +13,7 @@ import { postRouter } from "./routes/posts";
 import { audioRouter } from "./routes/audio";
 import { articleRouter } from "./routes/aritcles";
 import { tasksRouter } from "./routes/tasks";
+import { sessionRouter } from "./routes/sessions";
 
 // import { serveStatic } from "hono/bun";
 
@@ -52,7 +53,8 @@ const routes = app
   .route("/mood", moodRouter)
   .route("/audios", audioRouter)
   .route("/articles", articleRouter)
-  .route("/tasks", tasksRouter);
+  .route("/tasks", tasksRouter)
+  .route("/sessions", sessionRouter);
   
 app.onError((err, c) => {
   if (err instanceof HTTPException) {

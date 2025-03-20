@@ -15,10 +15,13 @@ import { db } from "@/adapter";
 import { moodAssessmentsTable } from "@/db/schemas/mood";
 import { userTable } from "@/db/schemas/auth";
 import { HTTPException } from "hono/http-exception";
+import { sessionTable } from "@/db/schemas/sessions";
 
 // Initialize the language model
 const llm = new ChatGroq({
-  model: "mixtral-8x7b-32768",
+  // model: "mixtral-8x7b-32768",
+  model: "deepseek-r1-distill-qwen-32b",
+  
   temperature: 0,
   apiKey: "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",
 });
@@ -31,7 +34,7 @@ const redis = new Redis({
 
 // Define the mood assessment prompt
 const moodPrompt = ChatPromptTemplate.fromTemplate(`
-You are an AI assistant called Hear-U, engaging in a real-time conversation with a user to determine their mood based on five multiple-choice questions. You will ask one question at a time and wait for the user's answer before proceeding to the next question. After the user has answered five questions, you will analyze their responses and provide a mood assessment.
+You are an AI assistant called Hear-U, engaging in a real-time conversation with a user to determine their mood based on five multiple-choice questions. You will ask one question at a time and wait for the user's answer before proceeding to the next question. After the user has answered five questions, you will analyze their responses and provide a mood assessment. Do not include any reasoning, internal thoughts, or tags like <think> in your response.
 
 **Instructions:**
 - Review the chat history to determine how many questions have been asked and answered.
@@ -67,7 +70,7 @@ const therapistPrompt = ChatPromptTemplate.fromTemplate(`
 You are an AI assistant called Hear-U, a compassionate and supportive virtual therapist.  
 
 Your goal is to help users talk about their feelings, offer comfort, and provide guidance to help them feel better.  
-If the user is experiencing a severe emotional crisis, gently encourage them to seek support from a professional therapist or a trusted person.  
+If the user is experiencing a severe emotional crisis, gently encourage them to seek support from a professional therapist or a trusted person. Do not include any reasoning, internal thoughts, or tags like <think> in your response.  
 
 **Chat History:** {history}  
 **User Input:** {input}  
@@ -78,11 +81,20 @@ const initializeChain = async (
   sessionId: string,
   prompt: ChatPromptTemplate,
 ) => {
+  //actual 
+  // const upstashMessageHistory = new UpstashRedisChatMessageHistory({
+  //   sessionId,
+  //   config: {
+  //     url: "https://daring-stud-53285.upstash.io",
+  //     token: "AdAlAAIjcDE5ZWQ0MDg0YzdhOWE0Yjg0YmEyNjk4Zjc3NzBkYTgwM3AxMA",
+  //   },
+  // });
+
   const upstashMessageHistory = new UpstashRedisChatMessageHistory({
     sessionId,
     config: {
-      url: "https://daring-stud-53285.upstash.io",
-      token: "AdAlAAIjcDE5ZWQ0MDg0YzdhOWE0Yjg0YmEyNjk4Zjc3NzBkYTgwM3AxMA",
+      url: process.env["UPSTASH_REDIS_URL"],
+      token: process.env["UPSTASH_REDIS_TOKEN"],
     },
   });
 
@@ -132,10 +144,28 @@ export const moodRouter = new Hono()
         const { userId } = c.req.valid("form");
         const sessionId = uuidv4();
         await redis.set(`session:${sessionId}:userId`, userId);
+
+        const sessionInsert = await db.insert(sessionTable).values({
+          id: sessionId,
+          userId,
+          title: sessionId
+        }).returning();
+
+        console.log("sessionInsert>>>", sessionInsert)
+
+
         const chain = await initializeChain(sessionId, moodPrompt);
         const result = await chain.call({ input: "Hi" });
+
+
         console.log("result>>>>>>", result);
-        return c.json({ success: true, message: result["response"], sessionId });
+
+        // Post-process to remove <think> tags if they still appear
+      let response = result["response"];
+      response = response.replace(/<think>[\s\S]*?<\/think>/g, "").trim();
+
+
+        return c.json({ success: true, message: response, sessionId });
       } catch (error) {
         console.error("Error in /start route:", error);
         return c.json(
@@ -168,10 +198,25 @@ export const moodRouter = new Hono()
         
         const sessionId = uuidv4();
         await redis.set(`session:${sessionId}:userId`, userId);
+
+        const sessionInsert = await db.insert(sessionTable).values({
+          id: sessionId,
+          userId,
+          title: sessionId
+        }).returning();
+
+        console.log("sessionInsert>>>", sessionInsert)
+
         const chain = await initializeChain(sessionId, therapistPrompt);
         const result = await chain.call({ input: "Hi" });
         console.log("result>>>>>>", result);
-        return c.json({ success: true, message: result["response"], sessionId });
+
+
+        // Post-process to remove <think> tags if they still appear
+      let response = result["response"];
+      response = response.replace(/<think>[\s\S]*?<\/think>/g, "").trim();
+
+        return c.json({ success: true, response, sessionId });
       } catch (error) {
         console.error("Error in /start/chat route:", error);
         return c.json(
@@ -222,7 +267,14 @@ export const moodRouter = new Hono()
         const result = await chain.call({ input: answer });
         console.log("result>>>>>>", result);
 
-        const responseMessage = result["response"];
+                // Post-process to remove <think> tags if they still appear
+      let response = result["response"];
+      response = response.replace(/<think>[\s\S]*?<\/think>/g, "").trim();
+
+      console.log("response>>>", response)
+
+
+        const responseMessage = response;
         const mood = extractMood(responseMessage);
 
         let moodAssessment;
@@ -366,3 +418,51 @@ export const moodRouter = new Hono()
       }
     }
   )
+.get(
+  "/messages/:sessionId",
+  zValidator("param", z.object({ sessionId: z.string().min(1) })),
+  async (c) => {
+    try {
+      const { sessionId } = c.req.valid("param");
+
+      // Initialize UpstashRedisChatMessageHistory with the same config as in initializeChain
+      const upstashMessageHistory = new UpstashRedisChatMessageHistory({
+        sessionId,
+        config: {
+          url: process.env["UPSTASH_REDIS_URL"],
+          token: process.env["UPSTASH_REDIS_TOKEN"],
+        },
+      });
+
+      // Fetch all messages for the session
+      const messages = await upstashMessageHistory.getMessages();
+      console.log("messages>>>", messages);
+
+      // Transform the messages into a simpler format
+      const formattedMessages = messages.map((message) => ({
+        role: message.constructor.name === "HumanMessage" ? "user" : "assistant", // Check constructor name
+        content: message.content,
+      }));
+
+      return c.json({
+        success: true,
+        sessionId,
+        messages: formattedMessages,
+      });
+    } catch (error) {
+      console.error("Error in /messages/:sessionId route:", error);
+      return c.json(
+        {
+          success: false,
+          error:
+            process.env.NODE_ENV === "production"
+              ? "Internal Server Error"
+              : error instanceof Error
+              ? error.message
+              : "Unknown error",
+        },
+        500,
+      );
+    }
+  },
+)

@@ -1,0 +1,1 @@
+CREATE INDEX IF NOT EXISTS "user_embedding_idx" ON "user" USING hnsw ("embedding" vector_cosine_ops);

@@ -4,7 +4,7 @@ import { DrizzlePostgreSQLAdapter } from "@lucia-auth/adapter-drizzle";
 import postgres from "postgres";
 import { z } from "zod";
 
-import { sessionTable, userRelations, userTable } from "./db/schemas/auth";
+import {  userRelations, userTable } from "./db/schemas/auth";
 import { commentRelations, commentsTable } from "./db/schemas/comments";
 import { postsRelations, postsTable } from "./db/schemas/posts";
 import {
@@ -13,6 +13,7 @@ import {
   postUpvoteRelations,
   postUpvotesTable,
 } from "./db/schemas/upvotes";
+import { sessionTable } from "./db/schemas/sessions";
 
 const EnvSchema = z.object({
   DATABASE_URL: z.string().url(),
