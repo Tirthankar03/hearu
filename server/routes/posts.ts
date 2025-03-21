@@ -111,6 +111,7 @@ export const postRouter = new Hono()
         commentCount: postsTable.commentCount,
         author: {
           username: userTable.username,
+          randname: userTable.randname,
           id: userTable.id,
         },
         // isUpvoted: user
@@ -284,6 +285,7 @@ export const postRouter = new Hono()
           childComments: [],
           author: {
             username: existingUser.username,
+            randname: existingUser.randname,
             id: existingUser.id,
           },
         } as Comment,
@@ -396,6 +398,7 @@ export const postRouter = new Hono()
               author: {
                 columns: {
                   username: true,
+                  randname: true,
                   id: true,
                 },
               },
@@ -462,6 +465,7 @@ export const postRouter = new Hono()
           commentCount: postsTable.commentCount,
           author: {
             username: userTable.username,
+            randname: userTable.randname,
             id: userTable.id,
           },
           isUpvoted: userId

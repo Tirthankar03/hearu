@@ -23,13 +23,13 @@ const llm = new ChatGroq({
   model: "deepseek-r1-distill-qwen-32b",
   
   temperature: 0,
-  apiKey: "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",
+  apiKey:  process.env["GROQ_API_KEY"],
 });
 
 // Initialize Redis client
 const redis = new Redis({
-  url: "https://daring-stud-53285.upstash.io",
-  token: "AdAlAAIjcDE5ZWQ0MDg0YzdhOWE0Yjg0YmEyNjk4Zjc3NzBkYTgwM3AxMA",
+  url: process.env["UPSTASH_REDIS_URL"],
+  token: process.env["UPSTASH_REDIS_TOKEN"],
 });
 
 // Define the mood assessment prompt
