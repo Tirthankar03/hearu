@@ -14,6 +14,7 @@ import { audioRouter } from "./routes/audio";
 import { articleRouter } from "./routes/aritcles";
 import { tasksRouter } from "./routes/tasks";
 import { sessionRouter } from "./routes/sessions";
+import { chatsRouter } from "./routes/chats";
 
 // import { serveStatic } from "hono/bun";
 
@@ -54,7 +55,8 @@ const routes = app
   .route("/audios", audioRouter)
   .route("/articles", articleRouter)
   .route("/tasks", tasksRouter)
-  .route("/sessions", sessionRouter);
+  .route("/sessions", sessionRouter)
+  .route("/chats", chatsRouter);
   
 app.onError((err, c) => {
   if (err instanceof HTTPException) {
