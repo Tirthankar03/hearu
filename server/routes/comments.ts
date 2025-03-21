@@ -115,6 +115,7 @@ export const commentsRouter = new Hono()
           commentUpvotes: [],
           author: {
             username: existingUser.username,
+            randname: existingUser.randname,
             id: existingUser.id,
           },
         } as Comment,
@@ -221,6 +222,7 @@ export const commentsRouter = new Hono()
           author: {
             columns: {
               username: true,
+              randname: true,
               id: true,
             },
           },
