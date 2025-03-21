@@ -1,94 +1,127 @@
-HearU - AI-Powered Mental Health App
+# HearU - AI-Powered Mental Health App
 
-Introduction
+**Empowering mental wellness through AI and community support.**
 
-HearU is an AI-powered mental health application designed to provide structured daily wellness tasks, AI-driven mental health support, and a unique peer connection system. The app ensures users remain motivated, track their mental well-being, and connect with individuals facing similar challenges.
+Struggling with mental health? HearU is here to help. Our AI-powered app offers daily wellness tasks, personalized AI-driven support, and a unique peer connection system to keep you motivated, track your well-being, and connect you with others facing similar challenges.
 
-Features
+---
 
-Daily Wellness Tasks: Users receive randomized tasks such as breathing exercises, articles, and sleep sounds throughout the day. Completing tasks earns them points to unlock more content.
+## 🌟 Features
 
-AI Chat Support: A chatbot powered by DeepSeek R1 offers personalized mental health guidance based on user queries.
+- **Daily Wellness Tasks**  
+  Randomized activities like breathing exercises, articles, and sleep sounds to inspire your day. Earn points to unlock more content!
 
-Mood Tracking: Users answer periodic quizzes and mood check-ins, which generate a historical mood graph.
+- **AI Chat Support**  
+  Get personalized mental health guidance from our DeepSeek R1-powered chatbot.
 
-Peer Support System: Users can connect with others facing similar struggles through a vector-based recommendation system.
+- **Mood Tracking**  
+  Answer periodic quizzes and check-ins to monitor your mental well-being, visualized in a historical mood graph.
 
-Profile Customization: Users can add personal descriptions and tags, which help in finding relevant peer matches.
+- **Peer Support System**  
+  Connect with others who understand your struggles via our vector-based recommendation system.
 
-Technology Stack
+- **Profile Customization**  
+  Add personal descriptions and tags to find peer matches that resonate with you.
 
-Frontend: Flutter
+---
 
-Backend: Hono, Drizzle ORM
+## 🛠️ Technology Stack
 
-Database: PostgreSQL with pgvector for vector embeddings
+- **Frontend**: Flutter  
+- **Backend**: Hono, Drizzle ORM  
+- **Database**: PostgreSQL with pgvector for vector embeddings  
+- **Caching**: Redis (two instances: one for LLM chat storage, one for user-to-user chats)  
+- **AI Models**:  
+  - DeepSeek R1: LLM-based mental health chat and quizzes  
+  - Gemini Flash 2: Text summarization  
+  - Gemini Embedding 01: Vector embeddings  
 
-Caching: Redis (two instances: one for LLM chat storage, another for user-to-user chats)
+---
 
-AI Models:
+## 🚀 How It Works
 
-DeepSeek R1 for LLM-based mental health chat and quizzes
+1. **Daily Task System**  
+   Kick off your day with wellness tasks tailored to your needs.
 
-Gemini Flash 2 for text summarization
+2. **Mood Assessment**  
+   Track your mood with a quick 5-question quiz and periodic check-ins.
 
-Gemini Embedding 01 for generating vector embeddings
+3. **AI Chatbot Assistance**  
+   Chat with our AI for real-time mental health support.
 
-How It Works
+4. **Peer Matching**  
+   Find like-minded peers using vector embeddings from your chat history and profile.
 
-Daily Task System: The app assigns wellness tasks throughout the day.
+5. **User Engagement**  
+   Earn points by completing tasks to unlock exciting new content.
 
-Mood Assessment: A 5-question quiz and periodic check-ins track user mood.
+---
 
-AI Chatbot Assistance: Users can chat with the AI for mental health guidance.
+## 📚 Setup & Installation
 
-Peer Matching: The system generates vector embeddings from chat history and user profile to recommend similar users.
+1. **Clone the Repository**  
+   ```bash
+   git clone https://github.com/your-repo/hearu.git
+   ```
 
-User Engagement: Earned points from task completion unlock more content, enhancing user motivation.
+2. **Install Dependencies**  
+   ```bash
+   cd hearu
+   bun install
+   ```
 
-Setup & Installation
+3. **Set Up the Frontend**  
+   ```bash
+   cd frontend
+   flutter clean
+   flutter pub get
+   flutter run
+   flutter build --release
+   ```
 
-Clone the repository:
+4. **Set Up the Backend**  
+   ```bash
+   cd backend
+   bun install
+   bun run dev
+   ```
 
-git clone https://github.com/your-repo/hearu.git
+5. **Configure Environment Variables**  
+   Set up API keys and database connections in your `.env` file.
 
-Install dependencies:
+6. **Run the Flutter App**  
+   ```bash
+   flutter run
+   ```
 
-cd hearu
-flutter pub get
+---
 
-Set up the backend:
+## 📜 License
 
-cd backend
-npm install
-npm run dev
+This project leverages third-party services and APIs:  
+- OpenAI (DeepSeek R1)  
+- Google AI (Gemini Flash 2, Gemini Embedding 01)  
 
-Configure environment variables for API keys and database connections.
+Please ensure compliance with their terms of service when deploying the app.
 
-Run the Flutter app:
+---
 
-flutter run
+## 👥 Contributors
 
-License
+- **Tirthankar Nath**  
+  - Backend Development (Hono, API integrations, authentication)  
+  - Database Management (PostgreSQL, Redis, pgvector optimization)  
+  - AI & Machine Learning (Vector embeddings, similarity search, LLM integration)  
 
-This project utilizes third-party services and APIs:
+- **Krishnabh Das**  
+  - Frontend Development (Flutter UI, state management)  
+  - UI/UX Design (User experience, flow optimization)  
 
-OpenAI (DeepSeek R1)
+---
 
-Google AI (Gemini Flash 2, Gemini Embedding 01)
+## 🔮 Future Enhancements
 
-Ensure compliance with their terms when deploying the app.
+- **Wearable Integration**: Real-time mental health tracking with devices (e.g., heart rate, sleep monitoring).  
+- **Enhanced Personalization**: AI-driven recommendations tailored to your behavior and preferences.  
+- **Gamification**: Boost engagement with badges, leaderboards, and challenges.  
 
-Contributors
-
-Tirthankar Nath - Backend development (Hono, API integrations, authentication), Database management (PostgreSQL, Redis, pgvector optimization), AI & Machine Learning (Vector embeddings, similarity search, LLM integration)
-
-Krishnabh Das - Frontend development (Flutter UI, state management),  UI/UX Design (User experience, flow optimization)
-
-Future Enhancements
-
-Integration with wearable devices for real-time mental health tracking
-
-More personalized AI-generated recommendations
-
-Gamification for increased engagement
