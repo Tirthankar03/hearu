@@ -102,8 +102,6 @@ This project leverages third-party services and APIs:
 - OpenAI (DeepSeek R1)  
 - Google AI (Gemini Flash 2, Gemini Embedding 01)  
 
-Please ensure compliance with their terms of service when deploying the app.
-
 ---
 
 ## 👥 Contributors
