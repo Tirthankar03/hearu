@@ -21,6 +21,7 @@ export const loginSchema = z.object({
   username: z.string().min(3),
   randname: z.string().optional(),
   password: z.string().min(3).max(255),
+  email: z.string().optional(),
 });
 
 export const createPostSchema = insertPostSchema

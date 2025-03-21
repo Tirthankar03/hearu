@@ -48,7 +48,7 @@ const summaryModel = genAI.getGenerativeModel({
 export const authRouter = new Hono()
   //signup
   .post("/signup", zValidator("form", loginSchema), async (c) => {
-    const { username, password } = c.req.valid("form");
+    const { username, password, email } = c.req.valid("form");
 
     console.log("username>>>>", username);
     console.log("password>>>>", password);
@@ -64,6 +64,7 @@ export const authRouter = new Hono()
           id: userId,
           username,
           randname,
+          email,
           password_hash: passwordHash,
         })
         .returning();
