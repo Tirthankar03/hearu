@@ -8,6 +8,7 @@ import { UpstashRedisChatMessageHistory } from "@langchain/community/stores/mess
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { sessionTable } from "@/db/schemas/sessions";
 import { userTable } from "@/db/schemas/auth";
+import { flaggedUsersTable } from "@/db/schemas/flagged";
 
 
 // Initialize Google Gemini API
@@ -122,6 +123,54 @@ export const sessionRouter = new Hono()
   } catch (error) {
     console.error("Error summarizing session:", error);
     return c.json({ success: false, error: "Internal Server Error" }, 500);
+  }
+})
+.get("/get-all-flags", async (c) => {
+  try {
+    // Fetch all flagged users with user details
+    const flaggedUsers = await db
+      .select({
+        id: flaggedUsersTable.id,
+        userId: flaggedUsersTable.userId,
+        username: userTable.username,
+        randname: userTable.randname,
+        reason: flaggedUsersTable.reason,
+        percentage: flaggedUsersTable.percentage,
+        flaggedAt: flaggedUsersTable.flaggedAt,
+        reviewed: flaggedUsersTable.reviewed,
+      })
+      .from(flaggedUsersTable)
+      .leftJoin(userTable, eq(flaggedUsersTable.userId, userTable.id))
+      .orderBy(flaggedUsersTable.flaggedAt); // Optional: order by flagged time
+
+    // If no flagged users exist, return an empty array with a message
+    if (flaggedUsers.length === 0) {
+      return c.json({
+        success: true,
+        message: "No flagged users found",
+        data: [],
+      });
+    }
+
+    return c.json({
+      success: true,
+      message: "All flagged users fetched",
+      data: flaggedUsers,
+    });
+  } catch (error) {
+    console.error("Error fetching flagged users:", error);
+    return c.json(
+      {
+        success: false,
+        error:
+          process.env.NODE_ENV === "production"
+            ? "Internal Server Error"
+            : error instanceof Error
+            ? error.message
+            : "Unknown error",
+      },
+      500
+    );
   }
 })
 // .get(

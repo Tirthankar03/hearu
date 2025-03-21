@@ -1,0 +1,1 @@
+ALTER TABLE "flagged_users" ADD COLUMN "percentage" text NOT NULL;

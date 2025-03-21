@@ -1,1 +1,0 @@
-CREATE INDEX IF NOT EXISTS "session_embedding_idx" ON "session" USING hnsw ("embedding" vector_cosine_ops);

@@ -1,1 +1,0 @@
-ALTER TABLE "daily_tasks" ALTER COLUMN "date" DROP NOT NULL;

@@ -5,85 +5,22 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1741212331507,
-      "tag": "0000_lowly_captain_flint",
+      "when": 1742550420211,
+      "tag": "0000_unique_la_nuit",
       "breakpoints": true
     },
     {
       "idx": 1,
       "version": "7",
-      "when": 1741222301492,
-      "tag": "0001_lowly_nitro",
+      "when": 1742551092769,
+      "tag": "0001_spicy_clint_barton",
       "breakpoints": true
     },
     {
       "idx": 2,
       "version": "7",
-      "when": 1742394384500,
-      "tag": "0002_shallow_the_spike",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1742395608679,
-      "tag": "0003_tricky_chat",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1742492878950,
-      "tag": "0004_polite_morg",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1742494357529,
-      "tag": "0005_good_expediter",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "7",
-      "when": 1742496801438,
-      "tag": "0006_talented_devos",
-      "breakpoints": true
-    },
-    {
-      "idx": 7,
-      "version": "7",
-      "when": 1742496917868,
-      "tag": "0007_clumsy_black_queen",
-      "breakpoints": true
-    },
-    {
-      "idx": 8,
-      "version": "7",
-      "when": 1742504740575,
-      "tag": "0008_keen_bloodstrike",
-      "breakpoints": true
-    },
-    {
-      "idx": 9,
-      "version": "7",
-      "when": 1742513982830,
-      "tag": "0009_parallel_wrecking_crew",
-      "breakpoints": true
-    },
-    {
-      "idx": 10,
-      "version": "7",
-      "when": 1742524431048,
-      "tag": "0010_loving_korg",
-      "breakpoints": true
-    },
-    {
-      "idx": 11,
-      "version": "7",
-      "when": 1742524784628,
-      "tag": "0011_massive_lilandra",
+      "when": 1742553779994,
+      "tag": "0002_brief_sunspot",
       "breakpoints": true
     }
   ]

@@ -1,1 +1,0 @@
-ALTER TABLE "audios" ALTER COLUMN "duration" SET DATA TYPE text;

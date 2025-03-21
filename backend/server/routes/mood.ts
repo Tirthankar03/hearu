@@ -16,6 +16,8 @@ import { moodAssessmentsTable } from "@/db/schemas/mood";
 import { userTable } from "@/db/schemas/auth";
 import { HTTPException } from "hono/http-exception";
 import { sessionTable } from "@/db/schemas/sessions";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import { flaggedUsersTable } from "@/db/schemas/flagged";
 
 // Initialize the language model
 const llm = new ChatGroq({
@@ -75,6 +77,41 @@ If the user is experiencing a severe emotional crisis, gently encourage them to 
 **Chat History:** {history}  
 **User Input:** {input}  
 `);
+
+
+const genAI = new GoogleGenerativeAI(process.env["GEMINI_API_KEY"]!);
+export const geminiModel = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+
+
+const criticalityPrompt = `
+You are an AI safety assistant tasked with analyzing a user's message in a mental health chat context. Your goal is to determine if the message indicates potential drastic steps (e.g., self-harm, suicide), harmful behavior, or critical emotional distress. Follow these steps:
+
+1. **Analyze the Message**: Examine the user's input for explicit or implicit signs of danger, such as mentions of self-harm, hopelessness, or intent to act destructively.
+2. **Assign a Criticality Percentage**: Based on the severity and likelihood of drastic action or critical behavior, assign a percentage (0-100%):
+   - 0-20%: No significant concern (e.g., casual conversation).
+   - 21-40%: Mild concern (e.g., general sadness or frustration).
+   - 41-60%: Moderate concern (e.g., hints of despair or risky thoughts).
+   - 61-80%: High concern (e.g., strong emotional distress or vague threats).
+   - 81-100%: Severe concern (e.g., explicit intent to harm self or others).
+3. **Provide Reasoning**: Briefly explain why you assigned this percentage.
+
+**Input**: A single user message from a chat session.
+**Output**: Return a JSON object with:
+- 
+- "percentage": number (0-100)
+- "reason": string (explanation of the assessment)
+
+**Example Inputs and Outputs**:
+- Input: "I'm just tired today."
+  Output: { "percentage": 20, "reason": "Mild expression of fatigue, no immediate danger." }
+- Input: "I can't go on like this anymore."
+  Output: { "percentage": 60, "reason": "Moderate concern due to hopelessness, requires context." }
+- Input: "I'm going to end it all tonight."
+  Output: { "percentage": 90, "reason": "Severe concern due to explicit intent to self-harm." }
+
+**User Message**: {message}
+`;
+
 
 // Helper function to initialize conversation chain
 const initializeChain = async (
@@ -256,6 +293,81 @@ export const moodRouter = new Hono()
         if (!answer) {
           return c.json({ success: false, error: "No answer provided" }, 400);
         }
+
+        //this is where we will use the LLM to check for flag
+        const prompt = criticalityPrompt.replace("{message}", answer);
+
+        const result_user = await geminiModel.generateContent(prompt);
+
+
+            // const result = await model.generateContent(text);
+
+      console.log("result_user>>>", result_user)
+
+
+      if(!result_user.response.candidates){
+        return c.json({ success: false, error: "Invalid response format from AI" }, 500);
+
+
+      }
+    
+      const aiSummary = result_user.response.candidates[0].content.parts[0].text 
+    
+      console.log("aiSummary>>>>", aiSummary)
+    
+      if(!aiSummary){
+        return c.json({ success: false, error: "Invalid response format from AI" }, 500);
+
+      }
+    
+    
+      // const summary = aiSummary.replace("\n", "")
+    
+      // console.log("summary>>>>", summary)
+
+      // Clean up the response (remove markdown ```json ... ``` wrapper)
+    const cleanedSummary = aiSummary
+    .replace(/```json/g, "") // Remove opening ```json
+    .replace(/```/g, "")     // Remove closing ```
+    .replace(/\n/g, "")      // Remove newlines
+    .trim();
+
+  console.log("cleanedSummary>>>>", cleanedSummary);
+
+  // Parse the cleaned JSON string
+  let parsedResult;
+  try {
+    parsedResult = JSON.parse(cleanedSummary);
+  } catch (parseError) {
+    console.error("Failed to parse JSON:", parseError);
+    return c.json({ success: false, error: "Invalid response format from AI" }, 500);
+
+  }
+
+  // Extract percentage and reason
+  const { percentage, reason } = parsedResult;
+
+  if (typeof percentage !== "number" || !reason) {
+    return c.json({ success: false, error: "Invalid response format from AI" }, 500);
+
+  }
+
+  console.log("Parsed result>>>>", { percentage, reason });
+    
+  
+        
+      
+
+   // If percentage > 50%, save to flaggedUsersTable
+   const userId = await redis.get(`session:${sessionId}:userId`) as string;
+   if (percentage > 50 && userId) {
+     await db.insert(flaggedUsersTable).values({
+       userId,
+       reason,
+       percentage: percentage.toString(), // Convert number to string for schema
+     }).onConflictDoNothing(); // Avoid duplicates
+     console.log(`User ${userId} flagged with percentage ${percentage} for reason: ${reason}`);
+   }
 
         let chain;
         if (isQuiz) {

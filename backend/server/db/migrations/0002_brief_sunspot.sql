@@ -1,0 +1,1 @@
+ALTER TABLE "flagged_users" DROP COLUMN IF EXISTS "messages";
