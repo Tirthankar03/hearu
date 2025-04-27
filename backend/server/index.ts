@@ -6,8 +6,8 @@ import { type ErrorResponse } from "@/lib/types";
 
 // import type { Context } from "./context";
 // import { lucia } from "./lucia";
-import { authRouter } from "./routes/auth";
-import { commentsRouter } from "./routes/comments";
+
+
 import { moodRouter } from "./routes/mood";
 import { postRouter } from "./routes/posts";
 import { audioRouter } from "./routes/audio";
@@ -15,6 +15,8 @@ import { articleRouter } from "./routes/aritcles";
 import { tasksRouter } from "./routes/tasks";
 import { sessionRouter } from "./routes/sessions";
 import { chatsRouter } from "./routes/chats";
+import { authRouter } from "./routes/auth";
+import { commentsRouter } from "./routes/comments";
 
 // import { serveStatic } from "hono/bun";
 
@@ -50,7 +52,8 @@ const routes = app
   .basePath("/api")
   .route("/auth", authRouter)
   .route("/posts", postRouter)
-  .route("/comments", commentsRouter)
+  .route("/comments", commentsRouter
+  )
   .route("/mood", moodRouter)
   .route("/audios", audioRouter)
   .route("/articles", articleRouter)

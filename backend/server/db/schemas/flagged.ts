@@ -11,6 +11,7 @@ export const flaggedUsersTable = pgTable("flagged_users", {
   flaggedAt: timestamp("flagged_at").defaultNow().notNull(),
   percentage: text("percentage").notNull(), 
   reviewed: boolean("reviewed").default(false).notNull(), // Admin review status
+  sessionId: text("sessionId")
 });
 
 export const flaggedUsersRelations = relations(flaggedUsersTable, ({ one }) => ({

@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
-import { and, cosineDistance, eq, sql } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import { db } from "@/adapter";
 
 import { UpstashRedisChatMessageHistory } from "@langchain/community/stores/message/upstash_redis";

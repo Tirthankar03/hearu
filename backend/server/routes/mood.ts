@@ -22,8 +22,8 @@ import { flaggedUsersTable } from "@/db/schemas/flagged";
 // Initialize the language model
 const llm = new ChatGroq({
   // model: "mixtral-8x7b-32768",
-  model: "deepseek-r1-distill-qwen-32b",
-  
+  // model: "deepseek-r1-distill-qwen-32b",
+  model: "deepseek-r1-distill-llama-70b",
   temperature: 0,
   apiKey:  process.env["GROQ_API_KEY"],
 });
@@ -118,14 +118,6 @@ const initializeChain = async (
   sessionId: string,
   prompt: ChatPromptTemplate,
 ) => {
-  //actual 
-  // const upstashMessageHistory = new UpstashRedisChatMessageHistory({
-  //   sessionId,
-  //   config: {
-  //     url: "https://daring-stud-53285.upstash.io",
-  //     token: "AdAlAAIjcDE5ZWQ0MDg0YzdhOWE0Yjg0YmEyNjk4Zjc3NzBkYTgwM3AxMA",
-  //   },
-  // });
 
   const upstashMessageHistory = new UpstashRedisChatMessageHistory({
     sessionId,
@@ -364,6 +356,7 @@ export const moodRouter = new Hono()
      await db.insert(flaggedUsersTable).values({
        userId,
        reason,
+       sessionId,
        percentage: percentage.toString(), // Convert number to string for schema
      }).onConflictDoNothing(); // Avoid duplicates
      console.log(`User ${userId} flagged with percentage ${percentage} for reason: ${reason}`);
